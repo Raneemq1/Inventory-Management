@@ -43,7 +43,7 @@ namespace InventoryManagement
             Product searchedProduct = null;
             foreach (var product in products)
             {
-                if (product.Name == name) searchedProduct = product;
+                if (product.Name.ToLower() == name.ToLower()) searchedProduct = product;
             }
             return searchedProduct;
         }
