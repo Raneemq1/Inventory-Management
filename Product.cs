@@ -27,20 +27,20 @@ namespace InventoryManagement
             Price = price;
         }
 
-        public void UpdateProductName(Product product, string name)
+        public void UpdateProductName(string name)
         {
-            product.Name = name;
+           Name = name;
         }
 
-        public void UpdateProductQuantity(Product product, int quantity)
+        public void UpdateProductQuantity( int quantity)
         {
-            product.Quantity = quantity;
+            Quantity = quantity;
 
         }
-        public void UpdateProductPrice(Product product, double price)
+        public void UpdateProductPrice( double price)
         {
 
-            product.Price = price;
+            Price = price;
         }
     }
 }

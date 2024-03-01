@@ -18,24 +18,26 @@ namespace InventoryManagement
         {
             Inventory inventory = new Inventory();
 
-            int answer = -1;
-            string back="";
+            string answer = "";
+            string value="";
+            string name;
+            double price;
+            int quantity;
+      
             Console.WriteLine("Choose an Answer\n1-Add a product\n2-View all products" +
                 "\n3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
                 "6-Exit");
-            answer = int.Parse(Console.ReadLine());
+            answer = Console.ReadLine();
 
-            while (answer!=6)
+            while (answer!="6")
             {
 
                 switch (answer)
                 {
-                    case 1:
+                    case "1":
                         {
                             Console.Clear();
-                            string name;
-                            double price;
-                            int quantity;
+                            
                             Console.Write("Product Name=");
                             name = Console.ReadLine();
                             Console.Write("\nProduct Price=");
@@ -48,13 +50,60 @@ namespace InventoryManagement
 
                             break;
                         }
-                    case 2:
+                    case "2":
                         {
                             Console.Clear();
                             inventory.ViewAllProducts();
                             Console.WriteLine("\n\nPress anything to return");
-                            back=Console.ReadLine();
+                            value=Console.ReadLine();
                            
+                            break;
+                        }
+
+                    case "3":
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Write a name to check the product");
+                            name = Console.ReadLine();
+                            
+                            if (inventory.CheckProduct(name))
+                            {
+                                Product product=inventory.SearchProduct(name);
+                                name=product.Name;  
+                                quantity=product.Quantity;  
+                                price=product.Price;
+                                Console.Write("Product Name("+product.Name+"):");
+                                value=Console.ReadLine();
+                               
+                                if (value!=name)
+                                {
+                                    name = value;
+                                    product.UpdateProductName(name);
+                                }
+                                Console.Write("\nProduct Price(" + product.Price + "):");
+                                value = Console.ReadLine();
+                                if (double.Parse(value) != price)
+                                {
+                                    price = double.Parse(value);    
+                                    product.UpdateProductPrice(price);
+                                }
+                                Console.Write("\nProduct Quantity(" + product.Quantity + "):");
+                                value = Console.ReadLine();
+                                if (int.Parse(value) != quantity)
+                                {
+                                    quantity = int.Parse(value);
+                                    product.UpdateProductQuantity(quantity);
+                                }
+
+                            }
+                            else
+                            {
+
+                                Console.WriteLine("No products with this name found");
+                            }
+                            Console.WriteLine("\n\nPress anything to return");
+                            value = Console.ReadLine();
+
                             break;
                         }
 
@@ -66,7 +115,7 @@ namespace InventoryManagement
                 Console.WriteLine("Choose an Answer\n1-Add a product\n2-View all products" +
                 "\n3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
                 "6-Exit");
-                answer = int.Parse(Console.ReadLine());
+                answer = Console.ReadLine();
 
             }
         }
