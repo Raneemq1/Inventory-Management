@@ -19,12 +19,13 @@ namespace InventoryManagement
             Inventory inventory = new Inventory();
 
             int answer = -1;
+            string back="";
             Console.WriteLine("Choose an Answer\n1-Add a product\n2-View all products" +
                 "\n3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
                 "6-Exit");
             answer = int.Parse(Console.ReadLine());
 
-            while (answer != 0&&answer!=6)
+            while (answer!=6)
             {
 
                 switch (answer)
@@ -47,6 +48,15 @@ namespace InventoryManagement
 
                             break;
                         }
+                    case 2:
+                        {
+                            Console.Clear();
+                            inventory.ViewAllProducts();
+                            Console.WriteLine("\n\nPress anything to return");
+                            back=Console.ReadLine();
+                           
+                            break;
+                        }
 
                     default: { break; }
 
@@ -54,7 +64,7 @@ namespace InventoryManagement
                 }
                 Console.Clear();
                 Console.WriteLine("Choose an Answer\n1-Add a product\n2-View all products" +
-                "3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
+                "\n3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
                 "6-Exit");
                 answer = int.Parse(Console.ReadLine());
 
