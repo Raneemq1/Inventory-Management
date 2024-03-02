@@ -79,21 +79,21 @@ namespace InventoryManagement
                                 Console.Write("Product Name("+product.Name+"):");
                                 value=Console.ReadLine();
                                
-                                if (value!=name)
+                                if (!string.IsNullOrEmpty(value))
                                 {
                                     name = value;
                                     product.UpdateProductName(name);
                                 }
                                 Console.Write("\nProduct Price(" + product.Price + "):");
                                 value = Console.ReadLine();
-                                if (double.Parse(value) != price)
+                                if (!string.IsNullOrEmpty(value))
                                 {
                                     price = double.Parse(value);    
                                     product.UpdateProductPrice(price);
                                 }
                                 Console.Write("\nProduct Quantity(" + product.Quantity + "):");
                                 value = Console.ReadLine();
-                                if (int.Parse(value) != quantity)
+                                if (!string.IsNullOrEmpty(value))
                                 {
                                     quantity = int.Parse(value);
                                     product.UpdateProductQuantity(quantity);
@@ -110,7 +110,25 @@ namespace InventoryManagement
 
                             break;
                         }
-
+                    case "4":
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Put the name of a product to remove it");
+                            name= Console.ReadLine();
+                            if (inventory.CheckProduct(name))
+                            {
+                                Product product=inventory.SearchProduct(name);
+                                inventory.RemoveProduct(product);
+                                Console.WriteLine("Removed Sucessfully");
+                            }
+                            else
+                            {
+                                Console.WriteLine("No product with this name found");
+                            }
+                            Console.WriteLine("\n\nPress anything to return");
+                            value = Console.ReadLine();
+                            break;
+                        }
                     default: { break; }
 
 
