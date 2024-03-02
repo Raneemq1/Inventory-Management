@@ -42,5 +42,10 @@ namespace InventoryManagement
 
             Price = price;
         }
+
+        public override string ToString()
+        {
+            return $"\nName={Name}\nPrice={Price.ToString()}\nQuantity={Quantity.ToString()}";
+        }
     }
 }

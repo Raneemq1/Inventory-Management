@@ -20,6 +20,7 @@ namespace InventoryManagement
 
             string answer = "";
             string value="";
+            
             string name;
             double price;
             int quantity;
@@ -27,6 +28,7 @@ namespace InventoryManagement
             Console.WriteLine("Choose an Answer\n1-Add a product\n2-View all products" +
                 "\n3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
                 "6-Exit");
+
             answer = Console.ReadLine();
 
             while (answer!="6")
@@ -106,7 +108,7 @@ namespace InventoryManagement
 
                             break;
                         }
-                    case "4":
+                        case "4":
                         {
                             Console.Clear();
                             Console.WriteLine("Put the name of a product to remove it");
@@ -123,6 +125,25 @@ namespace InventoryManagement
                             }
                             Console.WriteLine("\n\nPress anything to return");
                             value = Console.ReadLine();
+                            break;
+                        }
+                        case "5":
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Put the name of a product to search if it's in the inventory");
+                            name= Console.ReadLine();
+                            if (inventory.CheckProduct(name))
+                            {
+                                Product product = inventory.SearchProduct(name);
+                                Console.WriteLine(product.ToString());
+                            }
+                            else
+                            {
+                                Console.WriteLine("No product found with this name");
+                            }
+                            Console.WriteLine("\n\nPress anything to return");
+                            value = Console.ReadLine();
+                           
                             break;
                         }
                     default: { break; }
