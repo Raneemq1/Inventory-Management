@@ -64,7 +64,52 @@ namespace InventoryManagement
                             break;
                         }
 
-                  
+                    case "3":
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Write a name to check the product");
+                            name = Console.ReadLine();
+                            
+                            if (inventory.CheckProduct(name))
+                            {
+                                Product product=inventory.SearchProduct(name);
+                                name=product.Name;  
+                                quantity=product.Quantity;  
+                                price=product.Price;
+                                Console.Write("Product Name("+product.Name+"):");
+                                value=Console.ReadLine();
+                               
+                                if (value!=name)
+                                {
+                                    name = value;
+                                    product.UpdateProductName(name);
+                                }
+                                Console.Write("\nProduct Price(" + product.Price + "):");
+                                value = Console.ReadLine();
+                                if (double.Parse(value) != price)
+                                {
+                                    price = double.Parse(value);    
+                                    product.UpdateProductPrice(price);
+                                }
+                                Console.Write("\nProduct Quantity(" + product.Quantity + "):");
+                                value = Console.ReadLine();
+                                if (int.Parse(value) != quantity)
+                                {
+                                    quantity = int.Parse(value);
+                                    product.UpdateProductQuantity(quantity);
+                                }
+
+                            }
+                            else
+                            {
+
+                                Console.WriteLine("No products with this name found");
+                            }
+                            Console.WriteLine("\n\nPress anything to return");
+                            value = Console.ReadLine();
+
+                            break;
+                        }
 
                     default: { break; }
 
