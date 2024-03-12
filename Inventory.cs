@@ -40,11 +40,9 @@ namespace InventoryManagement
            
             foreach (var product in products)
             {
-<<<<<<< HEAD
-                if (product.Name == name) return product;
-=======
-                if (product.Name.ToLower() == name.ToLower()) searchedProduct = product;
->>>>>>> e89f5ea (Edit a Product)
+
+                if (product.Name.ToLower() == name.ToLower()) return product;
+
             }
             return null;
         }
