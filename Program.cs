@@ -84,21 +84,21 @@ namespace InventoryManagement
                                 if (!string.IsNullOrEmpty(value))
                                 {
                                     name = value;
-                                    product.UpdateProductName(name);
+                                    product.Name=name;
                                 }
                                 Console.Write("\nProduct Price(" + product.Price + "):");
                                 value = Console.ReadLine();
                                 if (!string.IsNullOrEmpty(value))
                                 {
                                     price = double.Parse(value);    
-                                    product.UpdateProductPrice(price);
+                                    product.Price=price;
                                 }
                                 Console.Write("\nProduct Quantity(" + product.Quantity + "):");
                                 value = Console.ReadLine();
                                 if (!string.IsNullOrEmpty(value))
                                 {
                                     quantity = int.Parse(value);
-                                    product.UpdateProductQuantity(quantity);
+                                    product.Quantity=quantity;
                                 }
 
                             }

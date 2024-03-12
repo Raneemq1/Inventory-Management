@@ -27,21 +27,7 @@ namespace InventoryManagement
             Price = price;
         }
 
-        public void UpdateProductName(string name)
-        {
-           Name = name;
-        }
-
-        public void UpdateProductQuantity( int quantity)
-        {
-            Quantity = quantity;
-
-        }
-        public void UpdateProductPrice( double price)
-        {
-
-            Price = price;
-        }
+    
 
         public override string ToString()
         {
