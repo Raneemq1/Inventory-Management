@@ -31,13 +31,13 @@ namespace InventoryManagement
         //Return All Products in the List 
         public List<Product> ViewAllProducts()
         {
-           return products;
+            return products;
         }
 
         //Search for a Product in the List using It's Name
         public Product SearchProduct(String name)
         {
-           
+
             foreach (var product in products)
             {
 
@@ -54,7 +54,7 @@ namespace InventoryManagement
         {
             var product = SearchProduct(name);
             //check if its available in the inventory 
-         return product is not null;
+            return product is not null;
         }
 
 
