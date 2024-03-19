@@ -8,14 +8,11 @@ namespace InventoryManagement
 {
     public class Product
     {
-        //Define class properties 
-
 
         public string Name { get; set; }
         public int Quantity { get; set; }
         public double Price { get; set; }
 
-        //Define class constructors
 
         Product() { }
 

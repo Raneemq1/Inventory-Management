@@ -37,19 +37,13 @@ namespace InventoryManagement
         //Search for a Product in the List using It's Name
         public Product SearchProduct(String name)
         {
-
-            foreach (var product in products)
-            {
-
-                if (product.Name.ToLower() == name.ToLower()) return product;
-
-            }
-            return null;
+            Product product=products.FirstOrDefault(p=>p.Name.ToLower()==name.ToLower());
+  
+            return product;
         }
 
 
         //Update Product in the List 
-
         public bool CheckProduct(string name)
         {
             var product = SearchProduct(name);

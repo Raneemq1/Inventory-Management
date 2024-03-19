@@ -69,11 +69,9 @@ namespace InventoryManagement
                             Console.Clear();
                             Console.WriteLine("Write a name to check the product");
                             name = Console.ReadLine();
-
-                            if (inventory.CheckProduct(name))
+                            Product product = inventory.SearchProduct(name);
+                            if (product is not null)
                             {
-                                Product product = inventory.SearchProduct(name);
-
                                 Console.Write("Product Name(" + product.Name + "):");
                                 value = Console.ReadLine();
 
