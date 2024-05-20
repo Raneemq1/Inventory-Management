@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace InventoryManagement
+﻿namespace InventoryManagement
 {
     public class Product
     {
@@ -13,9 +7,6 @@ namespace InventoryManagement
         public int Quantity { get; set; }
         public double Price { get; set; }
 
-
-        Product() { }
-
         public Product(string name, int quantity, double price)
         {
 
@@ -23,8 +14,6 @@ namespace InventoryManagement
             Quantity = quantity;
             Price = price;
         }
-
-    
 
         public override string ToString()
         {
