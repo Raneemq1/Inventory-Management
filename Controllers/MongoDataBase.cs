@@ -2,6 +2,7 @@
 using InventoryManagement.Models;
 using System.Collections.Generic;
 using MongoDB.Bson;
+using InventoryManagement.Utils;
 namespace InventoryManagement.Controllers
 {
     public class MongoDataBase
@@ -17,9 +18,9 @@ namespace InventoryManagement.Controllers
         private void SetUpMongoDB()
         {
 
-            string connectionStrong = "mongodb+srv://mongoDB:mongoPassword@inventorycluster.dqj4pz7.mongodb.net/?retryWrites=true&w=majority&appName=InventoryCluster";
-            string dbName = "inventory";
-            string collectionName = "Inventory";
+            string connectionStrong = DBSettings.mongodbConnectionString;
+            string dbName = DBSettings.dataBaseName;
+            string collectionName = DBSettings.collectionName;
             try
             {
                 _client = new MongoClient(connectionStrong);

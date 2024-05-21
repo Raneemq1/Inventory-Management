@@ -1,4 +1,5 @@
 ﻿using InventoryManagement.Models;
+using InventoryManagement.Utils;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -8,11 +9,11 @@ namespace InventoryManagement.Controllers
     public class SqlDataBase
     {
         private SqlConnection _connection = new();
-        private string tableName;
+        private string tableName=DBSettings.sqlTableName;
 
-        public SqlDataBase(string tableName)
+        public SqlDataBase()
         {
-            this.tableName = tableName;
+            OpenConnection();
         }
         private void OpenConnection()
         {
@@ -26,7 +27,7 @@ namespace InventoryManagement.Controllers
         }
         private void SetUpConnectionString()
         {
-            string connectionString = "Server=desktop-g7mhp6v\\mssqlserver01;Database=inventory;Trusted_Connection=True;";
+            string connectionString = DBSettings.sqlConnectionString;
             _connection.ConnectionString = connectionString;
         }
 
@@ -41,7 +42,6 @@ namespace InventoryManagement.Controllers
         public IEnumerable<Product> GetProducts()
         {
             string query = $"select * from {tableName}";
-            OpenConnection();
             using (SqlCommand cmd = new(query, _connection))
             {
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -57,14 +57,12 @@ namespace InventoryManagement.Controllers
                 }
             }
 
-            CloseConnection();
         }
 
 
         public void InsertProduct(Product product)
         {
             string query = $"insert into {tableName} values ('{product.Name}',{product.Quantity},{product.Price})";
-            OpenConnection();
             try
             {
                 SqlCommand cmd = new(query, _connection);
@@ -73,7 +71,6 @@ namespace InventoryManagement.Controllers
                
             }
             catch { throw; }
-            CloseConnection();
         }
 
     }

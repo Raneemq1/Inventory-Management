@@ -9,7 +9,7 @@ Menu();
 
 void Menu()
 {
-    SqlDataBase db = new("Inventory");
+    SqlDataBase db = new();
     MongoDataBase mongoDB =new();
     Inventory inventory =new();
 
