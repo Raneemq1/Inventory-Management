@@ -1,4 +1,4 @@
-﻿using InventoryManagement;
+﻿using InventoryManagement.Models;
 using System;
 using System.Collections.Generic;
 
@@ -147,5 +147,7 @@ void Menu()
 
     }
 }
+
+
 
 

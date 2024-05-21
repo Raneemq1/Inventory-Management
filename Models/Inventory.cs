@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
-
-namespace InventoryManagement
+namespace InventoryManagement.Models
 {
     public class Inventory
     {
@@ -26,7 +24,7 @@ namespace InventoryManagement
             return products;
         }
 
-        public Product SearchProduct(String name)
+        public Product SearchProduct(string name)
         {
             Product product = products.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
 
