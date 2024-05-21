@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace InventoryManagement.Controller
+namespace InventoryManagement.Controllers
 {
     public class SqlDataBase
     {
         private SqlConnection _connection = new();
+        private string tableName;
+
+        public SqlDataBase(string tableName)
+        {
+            this.tableName = tableName;
+        }
         private void OpenConnection()
         {
             try
@@ -26,13 +32,13 @@ namespace InventoryManagement.Controller
 
         private void CloseConnection()
         {
-            if (_connection.State != System.Data.ConnectionState.Closed)
+            if (_connection.State != ConnectionState.Closed)
                 try { _connection.Close(); }
                 catch { throw; }
 
         }
 
-        public IEnumerable<Product> RetrievAllDataFromTable(string tableName)
+        public IEnumerable<Product> GetProducts()
         {
             string query = $"select * from {tableName}";
             OpenConnection();
@@ -55,7 +61,7 @@ namespace InventoryManagement.Controller
         }
 
 
-        public void InsertProduct(string tableName, Product product)
+        public void InsertProduct(Product product)
         {
             string query = $"insert into {tableName} values ('{product.Name}',{product.Quantity},{product.Price})";
             OpenConnection();
@@ -67,7 +73,7 @@ namespace InventoryManagement.Controller
                
             }
             catch { throw; }
-
+            CloseConnection();
         }
 
     }

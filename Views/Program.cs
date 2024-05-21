@@ -1,5 +1,4 @@
-﻿using InventoryManagement.Controller;
-using InventoryManagement.Controllers;
+﻿using InventoryManagement.Controllers;
 using InventoryManagement.Models;
 using System;
 using System.Collections.Generic;
@@ -10,8 +9,9 @@ Menu();
 
 void Menu()
 {
-    SqlDataBase db = new();
-    Inventory inventory = new Inventory();
+    SqlDataBase db = new("Inventory");
+    MongoDataBase mongoDB =new();
+    Inventory inventory =new();
 
     string answer, value;
     string name;
@@ -43,7 +43,8 @@ void Menu()
                     inventory.AddProduct(product);
                     try
                     {
-                        db.InsertProduct("Inventory", product);
+                        db.InsertProduct(product);
+                        mongoDB.InsertProduct(product);
                     }
                     catch(Exception ex) { Console.WriteLine(ex.ToString());}
 

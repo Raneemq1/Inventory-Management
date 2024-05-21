@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 namespace InventoryManagement.Models
 {
@@ -12,7 +11,6 @@ namespace InventoryManagement.Models
         {
             products.Add(product);
         }
-
 
         public void RemoveProduct(Product product)
         {
