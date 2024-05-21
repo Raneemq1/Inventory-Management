@@ -1,12 +1,16 @@
-﻿using InventoryManagement.Models;
+﻿using InventoryManagement.Controller;
+using InventoryManagement.Controllers;
+using InventoryManagement.Models;
 using System;
 using System.Collections.Generic;
+
 
 Console.WriteLine("Inventory Management");
 Menu();
 
 void Menu()
 {
+    SqlDataBase db = new();
     Inventory inventory = new Inventory();
 
     string answer, value;
@@ -37,6 +41,11 @@ void Menu()
                     quantity = int.Parse(Console.ReadLine());
                     Product product = new Product(name, quantity, price);
                     inventory.AddProduct(product);
+                    try
+                    {
+                        db.InsertProduct("Inventory", product);
+                    }
+                    catch(Exception ex) { Console.WriteLine(ex.ToString());}
 
 
                     break;

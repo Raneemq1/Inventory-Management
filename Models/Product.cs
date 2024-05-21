@@ -17,7 +17,7 @@
 
         public override string ToString()
         {
-            return $"\nName={Name}\nPrice={Price.ToString()}\nQuantity={Quantity.ToString()}";
+            return $"Name={Name}\nPrice={Price.ToString()}\nQuantity={Quantity.ToString()}\n";
         }
     }
 }
