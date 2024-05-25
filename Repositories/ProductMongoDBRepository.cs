@@ -2,11 +2,12 @@
 using InventoryManagement.Models;
 using System.Collections.Generic;
 using MongoDB.Bson;
-using InventoryManagement.Utils;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 namespace InventoryManagement.Repositories
 {
-    public class MongoDataBaseRepository : IDatabaseRepository<Product>
+    public class ProductMongoDBRepository : IProductRepository
     {
         private IMongoClient _client;
         private IMongoCollection<BsonDocument> _collection;
@@ -15,15 +16,14 @@ namespace InventoryManagement.Repositories
 
         public void SetupDB()
         {
+            var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+            string connectionStrong = config["MongoDB:connectionString"];
 
-            string connectionStrong = DBSettings.mongodbConnectionString;
-            string dbName = DBSettings.dataBaseName;
-            string collectionName = DBSettings.collectionName;
             try
             {
                 _client = new MongoClient(connectionStrong);
-                _database = _client.GetDatabase(dbName);
-                _collection = _database.GetCollection<BsonDocument>(collectionName);
+                _database = _client.GetDatabase("inventory");
+                _collection = _database.GetCollection<BsonDocument>("Inventory");
 
             }
             catch { throw; }

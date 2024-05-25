@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using InventoryManagement.Models;
 
 namespace InventoryManagement.Repositories
 {
-    public class LocalDataBaseRepository:IDatabaseRepository<Product>
+    public class ProductMemoryDBRepository:IProductRepository
     {
 
         private List<Product> _products;

@@ -1,23 +1,21 @@
 ﻿using InventoryManagement.Models;
-using InventoryManagement.Utils;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace InventoryManagement.Repositories
 {
-    public class SqlDataBaseRepository:IDatabaseRepository<Product>,IDisposable
+    public class ProductSqlServerDBRepository:IProductRepository,IDisposable
     {
         private SqlConnection _connection;
-        private string tableName;
-
    
         public void SetupDB()
         {
             _connection = new();
-            tableName = DBSettings.sqlTableName;
-            try
+           try
             {
                 SetUpConnectionString();
                 _connection.Open();
@@ -27,7 +25,8 @@ namespace InventoryManagement.Repositories
         }
         private void SetUpConnectionString()
         {
-            string connectionString = DBSettings.sqlConnectionString;
+            var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+            string connectionString = config["SqlServerDB:connectionString"];
             _connection.ConnectionString = connectionString;
         }
 
@@ -44,8 +43,8 @@ namespace InventoryManagement.Repositories
             _connection.Dispose();
         }
         public IEnumerable<Product> GetProducts()
-        {
-            string query = $"select * from {tableName}";
+        { 
+            string query = $"select * from Inventory";
             using (SqlCommand cmd = new(query, _connection))
             {
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -66,7 +65,7 @@ namespace InventoryManagement.Repositories
 
         public void InsertProduct(Product product)
         {
-            string query = $"insert into {tableName} values ('{product.Name}',{product.Quantity},{product.Price})";
+            string query = $"insert into Inventory values ('{product.Name}',{product.Quantity},{product.Price})";
             try
             {
                 SqlCommand cmd = new(query, _connection);
@@ -78,7 +77,7 @@ namespace InventoryManagement.Repositories
 
         public void UpdateProduct(string productName, Product product)
         {
-            string query = $"update {tableName} set productName='{product.Name}',productQuatity={product.Quantity},productPrice={product.Price} where productName='{productName}'";
+            string query = $"update Inventory set productName='{product.Name}',productQuatity={product.Quantity},productPrice={product.Price} where productName='{productName}'";
 
             try
             {
@@ -91,7 +90,7 @@ namespace InventoryManagement.Repositories
 
         private bool CheckProduct(string productName)
         {
-            string query = $"select top 1 * from {tableName} where productName='{productName}'";
+            string query = $"select top 1 * from Inventory where productName='{productName}'";
             try
             {
                 SqlCommand cmd = new(query, _connection);
@@ -106,7 +105,7 @@ namespace InventoryManagement.Repositories
         {
             if (CheckProduct(productName))
             {
-                string query = $"select top 1 * from {tableName} where productName='{productName}'";
+                string query = $"select top 1 * from Inventory where productName='{productName}'";
                 try
                 {
                     SqlCommand cmd = new(query, _connection);
@@ -134,7 +133,7 @@ namespace InventoryManagement.Repositories
         {
             if (CheckProduct(productName))
             {
-                string query = $"delete from {tableName} where productName='{productName}'";
+                string query = $"delete from Inventory where productName='{productName}'";
                 try
                 {
                     SqlCommand cmd = new(query, _connection);
