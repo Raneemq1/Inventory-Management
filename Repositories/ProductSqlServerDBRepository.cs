@@ -5,23 +5,23 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace InventoryManagement.Repositories
 {
-    public class ProductSqlServerDBRepository:IProductRepository,IDisposable
+    public class ProductSqlServerDBRepository : IProductRepository, IDisposable
     {
         private SqlConnection _connection;
-   
+
         public void SetupDB()
         {
             _connection = new();
-           try
+            try
             {
                 SetUpConnectionString();
                 _connection.Open();
             }
             catch { throw; }
-
         }
         private void SetUpConnectionString()
         {
@@ -42,68 +42,62 @@ namespace InventoryManagement.Repositories
             CloseConnection();
             _connection.Dispose();
         }
-        public IEnumerable<Product> GetProducts()
-        { 
+        public async Task<IEnumerable<Product>> GetProducts()
+        {
+            var products = new List<Product>();
             string query = $"select * from Inventory";
-            using (SqlCommand cmd = new(query, _connection))
-            {
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string productName = reader.GetString("productName");
-                        int productQuantity = reader.GetInt32("productQuatity");
-                        double productPrice = (double)reader.GetDecimal("productPrice");
-                        Product product = new(productName, productQuantity, productPrice);
-                        yield return product;
-                    }
-                }
-            }
+            using SqlCommand cmd = new(query, _connection);
+            using SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
+            while (reader.Read())
+            {
+                string productName = reader.GetString("productName");
+                int productQuantity = reader.GetInt32("productQuatity");
+                double productPrice = (double)reader.GetDecimal("productPrice");
+                Product product = new(productName, productQuantity, productPrice);
+               products.Add(product);
+            }
+            return products;
         }
 
-
-        public void InsertProduct(Product product)
+        public async Task InsertProduct(Product product)
         {
             string query = $"insert into Inventory values ('{product.Name}',{product.Quantity},{product.Price})";
+            SqlCommand cmd = new(query, _connection);
             try
             {
-                SqlCommand cmd = new(query, _connection);
-                cmd.ExecuteNonQuery();
-
+                await cmd.ExecuteNonQueryAsync();
             }
             catch { throw; }
         }
 
-        public void UpdateProduct(string productName, Product product)
+        public async Task UpdateProduct(string productName, Product product)
         {
             string query = $"update Inventory set productName='{product.Name}',productQuatity={product.Quantity},productPrice={product.Price} where productName='{productName}'";
 
             try
             {
                 SqlCommand cmd = new(query, _connection);
-                cmd.ExecuteNonQuery();
+                await cmd.ExecuteNonQueryAsync();
             }
             catch { throw; }
-
         }
 
-        private bool CheckProduct(string productName)
+        private async Task<bool> CheckProduct(string productName)
         {
             string query = $"select top 1 * from Inventory where productName='{productName}'";
             try
             {
                 SqlCommand cmd = new(query, _connection);
-                int n = (int)cmd.ExecuteScalar();
+                int n = (int)await cmd.ExecuteScalarAsync();
                 return true;
             }
             catch { return false; }
-
         }
 
-        public Product? RetrieveProductByName(string productName)
+        public async Task<Product?> RetrieveProductByName(string productName)
         {
-            if (CheckProduct(productName))
+            if (await CheckProduct(productName))
             {
                 string query = $"select top 1 * from Inventory where productName='{productName}'";
                 try
@@ -111,8 +105,7 @@ namespace InventoryManagement.Repositories
                     SqlCommand cmd = new(query, _connection);
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
+                       if (await reader.ReadAsync())
                         {
                             string name = reader.GetString("productName");
                             int quantity = reader.GetInt32("productQuatity");
@@ -121,31 +114,27 @@ namespace InventoryManagement.Repositories
                             return product;
                         }
                         else { return null; }
-                    }
-
-
                 }
                 catch { throw; }
             }
-            return null; 
+            return null;
         }
-        public bool DeleteProduct(string productName)
+        public async Task<bool> DeleteProduct(string productName)
         {
-            if (CheckProduct(productName))
+            if (await CheckProduct(productName))
             {
                 string query = $"delete from Inventory where productName='{productName}'";
                 try
                 {
                     SqlCommand cmd = new(query, _connection);
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                     return true;
-
                 }
                 catch { return false; }
             }
-            return false; 
+            return false;
         }
 
-      
+
     }
 }

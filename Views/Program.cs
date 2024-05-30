@@ -4,20 +4,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using InventoryManagement;
+using System.Threading.Tasks;
 
 try
 {
     IProductRepository db = ConfigurationsFile.Read("appsettings.json");
     db.SetupDB();
-    Menu(db);
+    await MenuAsync(db);
 }
-catch
+catch(InvalidCastException)
 {
     Console.WriteLine("Invalid configuration");
 }
+catch
+{
+    Console.WriteLine("Issue with database");
+}
 
 
-void Menu(IProductRepository db)
+async Task MenuAsync(IProductRepository db)
 {
     Console.Clear();
     string answer, value, name, searchedName;
@@ -43,18 +48,20 @@ void Menu(IProductRepository db)
 
                 try
                 {
-                    db.InsertProduct(product);
+                    await db.InsertProduct(product);
                     Console.WriteLine("Product added successfully.");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }
+                Console.WriteLine("\n\nPress Enter to return");
+                Console.ReadLine();
                 break;
 
             case "2":
                 Console.Clear();
-                IEnumerable<Product> products = db.GetProducts();
+                IEnumerable<Product> products =await db.GetProducts();
                 if (products.Count() == 0) Console.WriteLine("No products yet");
                 foreach (var prod in products)
                 {
@@ -68,8 +75,7 @@ void Menu(IProductRepository db)
                 Console.Clear();
                 Console.WriteLine("Enter the name of the product to edit:");
                 searchedName = Console.ReadLine();
-                product = db.RetrieveProductByName(searchedName);
-
+                product = await db.RetrieveProductByName(searchedName);
                 if (product != null)
                 {
                     Console.Write("Product Name(" + product.Name + "): ");
@@ -109,7 +115,7 @@ void Menu(IProductRepository db)
                 Console.WriteLine("Enter the name of the product to remove:");
                 name = Console.ReadLine();
 
-                if (db.DeleteProduct(name))
+                if (await db.DeleteProduct(name))
                 {
                     Console.WriteLine("Product removed successfully.");
                 }
@@ -125,7 +131,7 @@ void Menu(IProductRepository db)
                 Console.Clear();
                 Console.WriteLine("Enter the name of the product to search:");
                 name = Console.ReadLine();
-                product = db.RetrieveProductByName(name);
+                product =await db.RetrieveProductByName(name);
 
                 if (product != null)
                 {

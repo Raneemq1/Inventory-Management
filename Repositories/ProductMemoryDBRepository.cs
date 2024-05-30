@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using InventoryManagement.Models;
 
 namespace InventoryManagement.Repositories
@@ -8,26 +9,20 @@ namespace InventoryManagement.Repositories
     public class ProductMemoryDBRepository:IProductRepository
     {
 
-        private List<Product> _products;
+        private List<Product>? _products;
 
-        public void SetupDB()
-        {
-            _products = new();
-        }
+        public void SetupDB()=>_products = new();
 
-        public IEnumerable<Product> GetProducts()
-        {
-            return _products;
-        }
 
-        public void InsertProduct(Product product)
-        {
-           _products.Add(product);
-        }
+        public async Task<IEnumerable<Product>> GetProducts() => _products;
+        
 
-        public void UpdateProduct(string productName, Product product)
+        public async Task InsertProduct(Product product)=> _products?.Add(product);
+        
+
+        public async Task UpdateProduct(string productName, Product product)
         {
-            Product? oldProduct = RetrieveProductByName(productName);
+            Product? oldProduct = await RetrieveProductByName(productName);
             if (oldProduct is not null)
             {
                 oldProduct.Name = product.Name;
@@ -37,19 +32,19 @@ namespace InventoryManagement.Repositories
             else { throw new Exception("no product found"); }
         }
 
-        public Product? RetrieveProductByName(string productName)
+        public async Task<Product?> RetrieveProductByName(string productName)
         {
-        Product product = _products.FirstOrDefault(p => p.Name.ToLower() == productName.ToLower());
+        Product? product = _products?.FirstOrDefault(p => p.Name.ToLower() == productName.ToLower());
 
         return product;
     }
 
-        public bool DeleteProduct(string productName)
+        public async Task<bool> DeleteProduct(string productName)
         {
-            Product product = RetrieveProductByName(productName);
+            Product? product = await RetrieveProductByName(productName);
             if (product is not null)
             {
-                _products.Remove(product);
+                _products!.Remove(product);
                 return true;
             }
             return false;

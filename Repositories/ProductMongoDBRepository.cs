@@ -1,16 +1,15 @@
 ﻿using MongoDB.Driver;
 using InventoryManagement.Models;
 using System.Collections.Generic;
-using MongoDB.Bson;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Threading.Tasks;
 namespace InventoryManagement.Repositories
 {
     public class ProductMongoDBRepository : IProductRepository
     {
         private IMongoClient _client;
-        private IMongoCollection<BsonDocument> _collection;
+        private IMongoCollection<Product> _collection;
         private IMongoDatabase _database;
 
 
@@ -23,22 +22,22 @@ namespace InventoryManagement.Repositories
             {
                 _client = new MongoClient(connectionStrong);
                 _database = _client.GetDatabase("inventory");
-                _collection = _database.GetCollection<BsonDocument>("Inventory");
+                _collection = _database.GetCollection<Product>("Inventory");
 
             }
             catch { throw; }
 
         }
 
-        public IEnumerable<Product> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts()
         {
             var products = new List<Product>();
-            var documents = _collection.Find(new BsonDocument()).ToList();
+            var documents = await _collection.Find(_ => true).ToListAsync();
             foreach (var document in documents)
             {
-                string productName = (string)document.GetValue(1);
-                int productQuantity = (int)document.GetValue(2);
-                double productPrice = (double)document.GetValue(3);
+                string productName = document.Name;
+                int productQuantity = document.Quantity;
+                double productPrice = document.Price;
                 Product product = new(productName, productQuantity, productPrice);
                 products.Add(product);
 
@@ -46,52 +45,41 @@ namespace InventoryManagement.Repositories
             return products;
         }
 
-        public void InsertProduct(Product product)
-        {
-            var document = new BsonDocument
-        {
-          { "productName", product.Name },
-          { "productQuantity", product.Quantity },
-          { "productPrice", product.Price }};
-            _collection.InsertOne(document);
-        }
+        public async Task InsertProduct(Product product) => await _collection.InsertOneAsync(product); 
 
-        public void UpdateProduct(string productName, Product product)
+
+        public async Task UpdateProduct(string productName, Product product)
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("productName", productName);
-            var update = Builders<BsonDocument>.Update.Set("productName", product.Name).Set("productQuantity", product.Quantity).Set("productPrice", product.Price); ;
+            var filter = Builders<Product>.Filter.Eq(d => d.Name, product.Name);
 
             try
             {
-                _collection.UpdateOne(filter, update);
+                await _collection.FindOneAndReplaceAsync(filter, product);
             }
             catch { throw; }
 
-
         }
 
-        public Product? RetrieveProductByName(string productName)
+        public async Task<Product?> RetrieveProductByName(string productName)
         {
-
-
-            var filter = Builders<BsonDocument>.Filter.Eq("productName", productName);
-            var document = _collection.Find(filter).First();
+            var filter = Builders<Product>.Filter.Eq(d => d.Name, productName);
+            var document = await _collection.Find(filter).FirstOrDefaultAsync();
             if (document != null)
             {
-                string name = document.GetValue("productName").AsString;
-                int quantity = document.GetValue("productQuantity").AsInt32;
-                double price = document.GetValue("productPrice").AsDouble;
+                string name = document.Name;
+                int quantity = document.Quantity;
+                double price = document.Price;
 
-                return new Product(name, quantity, price); ;
+                return new Product(name, quantity, price); 
             }
 
             return null;
         }
-        public bool DeleteProduct(string productName)
+        public async Task<bool> DeleteProduct(string productName)
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("productName", productName);
-            var result= _collection.DeleteOne(filter);
-            return result.DeletedCount>0;
+            var filter = Builders<Product>.Filter.Eq(d => d.Name, productName);
+            var result = await _collection.DeleteOneAsync(filter);
+            return result.DeletedCount > 0;
 
         }
 

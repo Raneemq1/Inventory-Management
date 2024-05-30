@@ -1,9 +1,16 @@
-﻿namespace InventoryManagement.Models
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace InventoryManagement.Models
 {
     public class Product
     {
+        [BsonId]
+        public object Id { get; set; }
+        [BsonElement("productName")]
         public string Name { get; set; }
+        [BsonElement("productQuantity")]
         public int Quantity { get; set; }
+        [BsonElement("productPrice")]
         public double Price { get; set; }
 
         public Product(string name, int quantity, double price)

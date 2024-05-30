@@ -22,7 +22,7 @@ namespace InventoryManagement
             bool memoryEnabled = bool.Parse(config["MemoryDB:enabled"]);
              if (memoryEnabled) { return new ProductMemoryDBRepository(); }
 
-             throw new Exception("not valid db");
+             throw new InvalidCastException("not valid db");
 
         }
     }
