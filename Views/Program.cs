@@ -1,153 +1,159 @@
-﻿using InventoryManagement.Models;
+﻿using InventoryManagement.Repositories;
+using InventoryManagement.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using InventoryManagement;
+using System.Threading.Tasks;
 
-Console.WriteLine("Inventory Management");
-Menu();
-
-void Menu()
+try
 {
-    Inventory inventory = new Inventory();
+    IProductRepository db = ConfigurationsFile.Read("appsettings.json");
+    db.SetupDB();
+    await MenuAsync(db);
+}
+catch(InvalidCastException)
+{
+    Console.WriteLine("Invalid configuration");
+}
+catch
+{
+    Console.WriteLine("Issue with database");
+}
 
-    string answer, value;
-    string name;
-    double price;
+
+async Task MenuAsync(IProductRepository db)
+{
+    Console.Clear();
+    string answer, value, name, searchedName;
     int quantity;
+    double price;
 
-    Console.WriteLine("Choose an Answer\n1-Add a product\n2-View all products" +
-        "\n3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
-        "6-Exit");
-
-    answer = Console.ReadLine();
-
-    while (answer != "6")
+    while (true)
     {
+        Console.WriteLine("Choose an option:\n1-Add a product\n2-View all products\n3-Edit a product\n4-Delete a product\n5-Search for a product\n6-Exit");
+        answer = Console.ReadLine();
 
         switch (answer)
         {
             case "1":
+                Console.Clear();
+                Console.Write("Product Name=");
+                name = Console.ReadLine();
+                Console.Write("\nProduct Price=");
+                price = double.Parse(Console.ReadLine());
+                Console.Write("\nProduct Quantity=");
+                quantity = int.Parse(Console.ReadLine());
+                Product product = new(name, quantity, price);
+
+                try
                 {
-                    Console.Clear();
-
-                    Console.Write("Product Name=");
-                    name = Console.ReadLine();
-                    Console.Write("\nProduct Price=");
-                    price = double.Parse(Console.ReadLine());
-                    Console.Write("\nProduct Quantity=");
-                    quantity = int.Parse(Console.ReadLine());
-                    Product product = new Product(name, quantity, price);
-                    inventory.AddProduct(product);
-
-
-                    break;
+                    await db.InsertProduct(product);
+                    Console.WriteLine("Product added successfully.");
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                Console.WriteLine("\n\nPress Enter to return");
+                Console.ReadLine();
+                break;
+
             case "2":
+                Console.Clear();
+                IEnumerable<Product> products =await db.GetProducts();
+                if (products.Count() == 0) Console.WriteLine("No products yet");
+                foreach (var prod in products)
                 {
-                    Console.Clear();
-                    List<Product> products = inventory.ViewAllProducts();
-                    foreach (var product in products)
-                    {
-                        Console.WriteLine("Name={0}\tQuantity={1}\tPrice={2}$", product.Name, product.Quantity, product.Price);
-                    }
-                    Console.WriteLine("\n\nPress anything to return");
-                    value = Console.ReadLine();
-
-                    break;
+                    Console.WriteLine("Name={0}\tQuantity={1}\tPrice={2}$", prod.Name, prod.Quantity, prod.Price);
                 }
+                Console.WriteLine("\n\nPress Enter to return");
+                Console.ReadLine();
+                break;
 
             case "3":
+                Console.Clear();
+                Console.WriteLine("Enter the name of the product to edit:");
+                searchedName = Console.ReadLine();
+                product = await db.RetrieveProductByName(searchedName);
+                if (product != null)
                 {
-                    Console.Clear();
-                    Console.WriteLine("Write a name to check the product");
-                    name = Console.ReadLine();
-                    Product product = inventory.SearchProduct(name);
-                    if (product is not null)
-                    {
-                        Console.Write("Product Name(" + product.Name + "):");
-                        value = Console.ReadLine();
-
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            name = value;
-                            product.Name = name;
-                        }
-                        Console.Write("\nProduct Price(" + product.Price + "):");
-                        value = Console.ReadLine();
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            price = double.Parse(value);
-                            product.Price = price;
-                        }
-                        Console.Write("\nProduct Quantity(" + product.Quantity + "):");
-                        value = Console.ReadLine();
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            quantity = int.Parse(value);
-                            product.Quantity = quantity;
-                        }
-
-                    }
-                    else
-                    {
-
-                        Console.WriteLine("No products with this name found");
-                    }
-                    Console.WriteLine("\n\nPress anything to return");
+                    Console.Write("Product Name(" + product.Name + "): ");
                     value = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        product.Name = value;
+                    }
 
-                    break;
+                    Console.Write("\nProduct Price(" + product.Price + "): ");
+                    value = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        product.Price = double.Parse(value);
+                    }
+
+                    Console.Write("\nProduct Quantity(" + product.Quantity + "): ");
+                    value = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        product.Quantity = int.Parse(value);
+                    }
+
+                    db.UpdateProduct(searchedName, product);
+                    Console.WriteLine("Product updated successfully.");
                 }
+                else
+                {
+                    Console.WriteLine("No product found with this name.");
+                }
+                Console.WriteLine("\n\nPress Enter to return");
+                Console.ReadLine();
+                break;
+
             case "4":
+                Console.Clear();
+                Console.WriteLine("Enter the name of the product to remove:");
+                name = Console.ReadLine();
+
+                if (await db.DeleteProduct(name))
                 {
-                    Console.Clear();
-                    Console.WriteLine("Put the name of a product to remove it");
-                    name = Console.ReadLine();
-                    if (inventory.CheckProduct(name))
-                    {
-                        Product product = inventory.SearchProduct(name);
-                        inventory.RemoveProduct(product);
-                        Console.WriteLine("Removed Sucessfully");
-                    }
-                    else
-                    {
-                        Console.WriteLine("No product with this name found");
-                    }
-                    Console.WriteLine("\n\nPress anything to return");
-                    value = Console.ReadLine();
-                    break;
+                    Console.WriteLine("Product removed successfully.");
                 }
+                else
+                {
+                    Console.WriteLine("No product found with this name.");
+                }
+                Console.WriteLine("\n\nPress Enter to return");
+                Console.ReadLine();
+                break;
+
             case "5":
+                Console.Clear();
+                Console.WriteLine("Enter the name of the product to search:");
+                name = Console.ReadLine();
+                product =await db.RetrieveProductByName(name);
+
+                if (product != null)
                 {
-                    Console.Clear();
-                    Console.WriteLine("Put the name of a product to search if it's in the inventory");
-                    name = Console.ReadLine();
-                    if (inventory.CheckProduct(name))
-                    {
-                        Product product = inventory.SearchProduct(name);
-                        Console.WriteLine(product.ToString());
-                    }
-                    else
-                    {
-                        Console.WriteLine("No product found with this name");
-                    }
-                    Console.WriteLine("\n\nPress anything to return");
-                    value = Console.ReadLine();
-
-                    break;
+                    Console.WriteLine(product.ToString());
                 }
-            default: { break; }
+                else
+                {
+                    Console.WriteLine("No product found with this name.");
+                }
+                Console.WriteLine("\n\nPress Enter to return");
+                Console.ReadLine();
+                break;
 
+            case "6":
+                Environment.Exit(0);
+                break;
 
+            default:
+                Console.WriteLine("Invalid option, please try again.");
+                break;
         }
-        Console.Clear();
-        Console.WriteLine("Choose an Answer\n1-Add a product\n2-View all products" +
-        "\n3-Edit a product\n4-Delete a product\n5-Search for a product\n" +
-        "6-Exit");
-        answer = Console.ReadLine();
 
+        Console.Clear();
     }
 }
-
-
-
-
